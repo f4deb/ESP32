@@ -17,7 +17,7 @@
 // Constantes
 //*******************
 
-
+#define ERROR_0001 "Error 0001 : Erreur de formatage"
 
 #define Ver_Touche 9 // Verrouilage de la roue codeuse
 
@@ -278,41 +278,58 @@ void serialPrintFrequency (uint32_t OL){
   
 }
 
+void uint64Format(){
+
+}
+
+void uint64SeparatorMille(){
+
+}
+
 void LcdPrintFrequency (uint64_t frequency, int format){
 
 
-  frequency = 145537500;
+  frequency = 1455375;
   format = 9;
 
   // calcul de la longueur du nombre transmis
   int n = log10(frequency) + 1;   // il faut ajouter 1
 
-  // Formatage
-  char value[format]; 
-  sprintf(value, "%ld", frequency);
+  if (format > n) {
 
-  // calcul nombre caratere vide (0)
-  int nombreZero = format - n;
+    // Formatage
+    char value[format]; 
+    sprintf(value, "%ld", frequency);
 
+    // calcul nombre caratere vide 
+    int nombreDeZero = format - n;
 
-  char tableau[format+1];
+    // variable de travail
+    char tableau[format+1];
 
-  for (int i = 0; i <= nombreZero; i++){
-    tableau [i] = '0';
+    // insertion de caractere vide devant le nombre
+    for (int i = 0; i <= nombreDeZero; i++){
+      tableau [i] = ' ';
+    }
+
+    //transfert du nombre dans le tableau
+    for (int i = nombreDeZero; i <= format; i++){
+      tableau[i] = value[i-nombreDeZero];
+      Serial.print(" i= ");
+      Serial.print(i);
+    }
+    // ajout fin de chaine de caractere
+    tableau[n+nombreDeZero] = '\0';
+      lcd.print(tableau);
+  }
+  else {
+    Serial.print(ERROR_0001);
   }
 
-  
-    for (int i = nombreZero; i <= n+1; i++){
-    tableau[i] = value[i-nombreZero];
-  }
-  tableau[n+2] = '\0';
-    lcd.print(tableau);
-
-  while (1);
 
 
 
-
+/*
   char *car;
   char value1[n+3];
   
@@ -347,7 +364,7 @@ void LcdPrintFrequency (uint64_t frequency, int format){
 
   //lcd.print(value);
   lcd.setCursor( 4,  1);
-
+*/
 }
 
 
