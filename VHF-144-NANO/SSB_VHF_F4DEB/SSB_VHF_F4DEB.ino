@@ -17,7 +17,7 @@
 // Constantes
 //*******************
 
-#define ERROR_0001 "Error 0001 : Erreur de formatage"
+#define ERROR_0001 "Error 0001 : Erreur de formatage Conversion frequence"
 
 #define Ver_Touche 9 // Verrouilage de la roue codeuse
 
@@ -44,8 +44,9 @@ const int colorB = 0;
 #define MESSAGE_INIT "JK-144-V0.03"
 
 #define OL1_COEFF 6
-
 #define OL2 8949438
+#define FREQUENCE_FORMAT 9
+
 
 LCD_I2C lcd(0x27, 16, 2); // Default address of most PCF8574 modules, change according
 
@@ -56,7 +57,7 @@ uint8_t keyboardCode = 0xFF;
 uint32_t OL1;
 uint64_t frequencyShift = 10000000/6;
 
-uint32_t frequenceOut = 144300000;
+uint64_t frequenceOut = 144300001;
 
 int compteur = 0;                   // Cette variable nous permettra de savoir combien de crans nous avons parcourus sur l'encodeur
                                     // (sachant qu'on comptera dans le sens horaire, et décomptera dans le sens anti-horaire)
@@ -94,7 +95,7 @@ void setup()
   // Query a status update and wait a bit to let the Si5351 populate the
   // status flags correctly.
     si5351.update_status();
-   delay(100);
+    delay(100);
   
   // set up the LCD's number of columns and rows:
     lcd.begin();
@@ -125,9 +126,9 @@ void setup()
     // Mémorisation des valeurs initiales, au démarrage du programme
     etatPrecedentLigneSW  = digitalRead(pinArduinoRaccordementSignalSW);
     etatPrecedentLigneCLK = digitalRead(pinArduinoRaccordementSignalCLK);
-
-    serialPrintFrequency(OL1);
-    LcdPrintFrequency (OL1,6);
+   
+    serialPrintFrequency(frequenceOut);
+    LcdPrintFrequency (frequenceOut,FREQUENCE_FORMAT);
 
     pinMode(BP1,INPUT);
     pinMode(BP2,INPUT);
@@ -199,8 +200,8 @@ void loop()
         lcd.blinkOff();
         lcd.cursorOff();
         delay(5);
-        serialPrintFrequency(OL1);  
-        LcdPrintFrequency (OL1,6);   
+        serialPrintFrequency(frequenceOut);  
+        LcdPrintFrequency (frequenceOut,FREQUENCE_FORMAT);   
     }
 
     // ******************************************
@@ -232,8 +233,8 @@ void loop()
         }
         // Petit délai de 5 ms, pour filtrer les éventuels rebonds sur CLK
         delay(5);
-        serialPrintFrequency(OL1);       
-        LcdPrintFrequency (OL1,6);
+        serialPrintFrequency(frequenceOut);       
+        LcdPrintFrequency (frequenceOut,FREQUENCE_FORMAT);
       }
     }
 }
@@ -278,24 +279,15 @@ void serialPrintFrequency (uint32_t OL){
   
 }
 
-void uint64Format(){
+char * uint64Format(uint64_t frequency, int format){
 
-}
-
-void uint64SeparatorMille(){
-
-}
-
-void LcdPrintFrequency (uint64_t frequency, int format){
-
-
-  frequency = 1455375;
-  format = 9;
+  // variable de travail
+  char tableau[format+1];
 
   // calcul de la longueur du nombre transmis
   int n = log10(frequency) + 1;   // il faut ajouter 1
 
-  if (format > n) {
+  if (format >= n) {
 
     // Formatage
     char value[format]; 
@@ -303,9 +295,6 @@ void LcdPrintFrequency (uint64_t frequency, int format){
 
     // calcul nombre caratere vide 
     int nombreDeZero = format - n;
-
-    // variable de travail
-    char tableau[format+1];
 
     // insertion de caractere vide devant le nombre
     for (int i = 0; i <= nombreDeZero; i++){
@@ -315,16 +304,29 @@ void LcdPrintFrequency (uint64_t frequency, int format){
     //transfert du nombre dans le tableau
     for (int i = nombreDeZero; i <= format; i++){
       tableau[i] = value[i-nombreDeZero];
-      Serial.print(" i= ");
-      Serial.print(i);
     }
     // ajout fin de chaine de caractere
     tableau[n+nombreDeZero] = '\0';
-      lcd.print(tableau);
+    lcd.print(tableau);
   }
   else {
     Serial.print(ERROR_0001);
   }
+
+  return tableau;
+}
+
+void uint64SeparatorMille(){
+
+}
+
+void LcdPrintFrequency (uint64_t frequency, int format){
+
+  char *texte = uint64Format(frequency, format);
+
+    Serial.print(texte);
+
+  
 
 
 
