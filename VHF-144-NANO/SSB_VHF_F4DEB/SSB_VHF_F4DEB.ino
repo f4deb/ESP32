@@ -57,7 +57,7 @@ uint8_t keyboardCode = 0xFF;
 uint32_t OL1;
 uint64_t frequencyShift = 10000000/6;
 
-uint64_t frequenceOut = 144300001;
+uint64_t frequenceOut = 145537500;
 
 int compteur = 0;                   // Cette variable nous permettra de savoir combien de crans nous avons parcourus sur l'encodeur
                                     // (sachant qu'on comptera dans le sens horaire, et décomptera dans le sens anti-horaire)
@@ -106,6 +106,7 @@ void setup()
     lcd.print(MESSAGE_INIT);
     lcd.setCursor(0, 1);
     lcd.print("F4DEB 2024");
+    Serial.println(MESSAGE_INIT);
  
   
   // Print a message to the LCD.
@@ -174,7 +175,7 @@ void loop()
 
   //si5351.set_freq(2255842700, SI5351_CLK0); 
   //setOl1(2255842700);
-  setFrequencyOut(144300000);
+  setFrequencyOut(frequenceOut);
   while(1);
 
 
@@ -264,22 +265,12 @@ void keyPrint(void){
 void serialPrintFrequency (uint32_t OL){
 
 
-  Serial.print(F("DDS local = "));
-  frequence = frequence; 
-  OL1 = frequence / 100;
-  Serial.print( OL1 );
-  Serial.println(F("Hz"));
-
-  lcd.clear();
-  lcd.print("OL1:");
-  lcd.print((OL1));// * 6) + OL2);
-  lcd.setCursor(0, 1);  
-  //lcd.print("OL1:");
+  
 
   
 }
 
-char * uint64Format(uint64_t frequency, int format){
+char* uint64Format(uint64_t frequency, int format){
 
   // variable de travail
   char tableau[format+1];
@@ -298,7 +289,7 @@ char * uint64Format(uint64_t frequency, int format){
 
     // insertion de caractere vide devant le nombre
     for (int i = 0; i <= nombreDeZero; i++){
-      tableau [i] = ' ';
+      tableau [i] = '0';
     }
 
     //transfert du nombre dans le tableau
@@ -307,34 +298,29 @@ char * uint64Format(uint64_t frequency, int format){
     }
     // ajout fin de chaine de caractere
     tableau[n+nombreDeZero] = '\0';
-    lcd.print(tableau);
+    //lcd.print(tableau);
   }
   else {
     Serial.print(ERROR_0001);
   }
 
-  return tableau;
+  int adresse = &tableau;
+  return (adresse);
 }
 
-void uint64SeparatorMille(){
-
-}
-
-void LcdPrintFrequency (uint64_t frequency, int format){
-
-  char *texte = uint64Format(frequency, format);
-
-    Serial.print(texte);
-
-  
 
 
 
 
-/*
-  char *car;
+long uint64SeparatorMille(char *value){
+
+  int n = strlen(value) ;   // il faut ajouter 1
+
+
+   char *car;
   char value1[n+3];
-  
+      sprintf(value1, "", value1);
+
   int j = 0;
   int k = 0;
   int p = strlen(value);
@@ -360,14 +346,38 @@ void LcdPrintFrequency (uint64_t frequency, int format){
   if (l != p+(p/4)) 
   value1[l] = '.';
   }
-  
-    lcd.print(value1);
-    Serial.print(value1);
 
-  //lcd.print(value);
-  lcd.setCursor( 4,  1);
-*/
+Serial.println(value1);
+
+//Serial.print(value1);
+
+  int adresse = &value1;
+  return (adresse);
 }
+
+
+
+
+
+
+void LcdPrintFrequency (uint64_t frequency, int format){
+  lcd.clear();
+
+  char *texte = uint64Format(frequency, format);
+  Serial.println(texte);
+  lcd.setCursor(0,0);
+  lcd.print(texte);
+
+  char *text1 = uint64SeparatorMille("123456789");
+  Serial.println(text1);
+  lcd.setCursor(0,1);
+  lcd.print(text1);
+}
+
+
+
+
+
 
 
 
