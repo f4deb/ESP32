@@ -312,21 +312,20 @@ char* uint64Format(uint64_t frequency, int format){
 
 
 
-long uint64SeparatorMille(char *value){
+char* uint64SeparatorMille(char *value){
 
-  int n = strlen(value) ;   // il faut ajouter 1
+  
+  char car;
+  //int n = strlen(value) ;   // il faut ajouter 1
+  int p = strlen(value);
 
-
-   char *car;
-  char value1[n+3];
-      sprintf(value1, "", value1);
+  char value1[p+(p/4)];
 
   int j = 0;
   int k = 0;
-  int p = strlen(value);
-  int l = -1;
-  for (j = 0; j <= p; j++){
-  l++;
+  int l = 0;
+
+  for (j = 0; j <= p-1; j++){
     for (k = 0 ; k<2; k++){
 
       car  = value[j];
@@ -338,21 +337,26 @@ long uint64SeparatorMille(char *value){
 //      }
       j++;
       l++;
-
+      
     }
   car  = value[j];
   value1[l] = car;
   l++;
-  if (l != p+(p/4)) 
-  value1[l] = '.';
+  if (l != p+(p/4)) {
+    value1[l] = '.';
+    }
+  l++;
   }
+  value1[l-1] = '\0';
 
-Serial.println(value1);
 
-//Serial.print(value1);
+  sprintf(value1,  value1); //pour corriger bug fin de chaine de caractere
+
+
+
 
   int adresse = &value1;
-  return (adresse);
+  return adresse;
 }
 
 
@@ -362,16 +366,20 @@ Serial.println(value1);
 
 void LcdPrintFrequency (uint64_t frequency, int format){
   lcd.clear();
+  Serial.println(MESSAGE_INIT);
 
-  char *texte = uint64Format(frequency, format);
+
+  /*char *texte = uint64Format(frequency, format);
   Serial.println(texte);
   lcd.setCursor(0,0);
-  lcd.print(texte);
+  lcd.print(texte);*/
 
   char *text1 = uint64SeparatorMille("123456789");
   Serial.println(text1);
   lcd.setCursor(0,1);
   lcd.print(text1);
+
+
 }
 
 
