@@ -57,7 +57,9 @@ uint8_t keyboardCode = 0xFF;
 uint32_t OL1;
 uint64_t frequencyShift = 10000000/6;
 
-uint64_t frequenceOut = 145537500;
+static uint64_t frequenceOut = 145537500;
+static char stringUint64SeparatorMille[30];
+static char stringUint64Format[30];
 
 int compteur = 0;                   // Cette variable nous permettra de savoir combien de crans nous avons parcourus sur l'encodeur
                                     // (sachant qu'on comptera dans le sens horaire, et décomptera dans le sens anti-horaire)
@@ -273,7 +275,7 @@ void serialPrintFrequency (uint32_t OL){
 char* uint64Format(uint64_t frequency, int format){
 
   // variable de travail
-  char tableau[format+1];
+  char stringUint64Format[format+1];
 
   // calcul de la longueur du nombre transmis
   int n = log10(frequency) + 1;   // il faut ajouter 1
@@ -289,22 +291,22 @@ char* uint64Format(uint64_t frequency, int format){
 
     // insertion de caractere vide devant le nombre
     for (int i = 0; i <= nombreDeZero; i++){
-      tableau [i] = '0';
+      stringUint64Format [i] = '0';
     }
 
-    //transfert du nombre dans le tableau
+    //transfert du nombre dans le stringUint64Format
     for (int i = nombreDeZero; i <= format; i++){
-      tableau[i] = value[i-nombreDeZero];
+      stringUint64Format[i] = value[i-nombreDeZero];
     }
     // ajout fin de chaine de caractere
-    tableau[n+nombreDeZero] = '\0';
+    stringUint64Format[n+nombreDeZero] = '\0';
     //lcd.print(tableau);
   }
   else {
     Serial.print(ERROR_0001);
   }
 
-  int adresse = &tableau;
+  int adresse = &stringUint64Format;
   return (adresse);
 }
 
@@ -319,8 +321,6 @@ char* uint64SeparatorMille(char *value){
   //int n = strlen(value) ;   // il faut ajouter 1
   int p = strlen(value);
 
-  char value1[p+(p/4)];
-
   int j = 0;
   int k = 0;
   int l = 0;
@@ -329,9 +329,9 @@ char* uint64SeparatorMille(char *value){
     for (k = 0 ; k<2; k++){
 
       car  = value[j];
-      value1[l] = car;
+      stringUint64SeparatorMille[l] = car;
 //      if (nombreZero > 0) {
-//        value1[l] = "e";
+//        stringUint64SeparatorMille[l] = "e";
 //        nombreZero--;
 //        j++;
 //      }
@@ -340,22 +340,16 @@ char* uint64SeparatorMille(char *value){
       
     }
   car  = value[j];
-  value1[l] = car;
+  stringUint64SeparatorMille[l] = car;
   l++;
   if (l != p+(p/4)) {
-    value1[l] = '.';
+    stringUint64SeparatorMille[l] = '.';
     }
   l++;
   }
-  value1[l-1] = '\0';
+  stringUint64SeparatorMille[l-1] = '\0';
 
-
-  sprintf(value1,  value1); //pour corriger bug fin de chaine de caractere
-
-
-
-
-  int adresse = &value1;
+  int adresse = &stringUint64SeparatorMille;
   return adresse;
 }
 
@@ -369,12 +363,12 @@ void LcdPrintFrequency (uint64_t frequency, int format){
   Serial.println(MESSAGE_INIT);
 
 
-  /*char *texte = uint64Format(frequency, format);
+  char *texte = uint64Format(frequency, format);
   Serial.println(texte);
   lcd.setCursor(0,0);
-  lcd.print(texte);*/
+  lcd.print(texte);
 
-  char *text1 = uint64SeparatorMille("123456789");
+  char *text1 = uint64SeparatorMille(texte);
   Serial.println(text1);
   lcd.setCursor(0,1);
   lcd.print(text1);
