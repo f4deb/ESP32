@@ -1,4 +1,5 @@
-#include <si5351.h>
+# 1 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
+# 2 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino" 2
 
 //***********************************
 // Emetteur GO
@@ -10,18 +11,18 @@
 //
 //***********************************
 
-#include "si5351.h"
-#include "Wire.h"
-#include <LCD-I2C.h>
+# 14 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino" 2
+# 15 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino" 2
+# 16 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino" 2
 //*******************
 // Constantesu
 //*******************
 
-#define ERROR_0001 "Error 0001 : Erreur de formatage Conversion frequence"
 
-#define Ver_Touche 9 // Verrouilage de la roue codeuse
 
-#define PLL_LED 11    // La LED de statut du PLL du Si5351
+
+
+
 Si5351 si5351;
 
 //rgb_lcd lcd;
@@ -32,26 +33,11 @@ const int colorB = 0;
 
 
 // Constantes
-#define pinArduinoRaccordementSignalSW  2       // La pin D2 de l'Arduino recevra la ligne SW du module KY-040
-#define pinArduinoRaccordementSignalCLK 3       // La pin D3 de l'Arduino recevra la ligne CLK du module KY-040
-#define pinArduinoRaccordementSignalDT  4       // La pin D4 de l'Arduino recevra la ligne DT du module KY-040
-
-#define BP1 5
-#define BP2 6
-#define BP3 7
-#define BP4 8
-
-#define MESSAGE_INIT "JK-144-V0.04"
-
-#define OL1_COEFF 6
-#define OL2 8949438
-#define FREQUENCE_FORMAT 9
-
-
+# 51 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
 LCD_I2C lcd(0x27, 16, 2); // Default address of most PCF8574 modules, change according
 
 // Variables
-uint64_t frequenceInit = 2255842700;     // 2255842700 (2255831666 * 6->-88 dBm) (1933570000 * 7 -> -89dBm)   (1503887777 * 9 -> -77dBm) ( VFO -> -89Dbm)
+uint64_t frequenceInit = 2255842700; // 2255842700 (2255831666 * 6->-88 dBm) (1933570000 * 7 -> -89dBm)   (1503887777 * 9 -> -77dBm) ( VFO -> -89Dbm)
 uint64_t frequence = 0;
 uint8_t keyboardCode = 0xFF;
 uint32_t OL1;
@@ -61,11 +47,11 @@ static uint64_t frequenceOut = 145537501;
 static char stringUint64SeparatorMille[30];
 static char stringUint64Format[30];
 
-int compteur = 0;                   // Cette variable nous permettra de savoir combien de crans nous avons parcourus sur l'encodeur
+int compteur = 0; // Cette variable nous permettra de savoir combien de crans nous avons parcourus sur l'encodeur
                                     // (sachant qu'on comptera dans le sens horaire, et décomptera dans le sens anti-horaire)
 
-int etatPrecedentLigneSW;           // Cette variable nous permettra de stocker le dernier état de la ligne SW lu, afin de le comparer à l'actuel
-int etatPrecedentLigneCLK; 
+int etatPrecedentLigneSW; // Cette variable nous permettra de stocker le dernier état de la ligne SW lu, afin de le comparer à l'actuel
+int etatPrecedentLigneCLK;
 
 
 void setup()
@@ -76,11 +62,11 @@ void setup()
   Serial.begin(115200);
 
   //Initialisation de la broche de LED
-  pinMode(PLL_LED, OUTPUT);     // Définition de la broche de la LED de statut de la PLL
-  digitalWrite(PLL_LED, 0);
+  pinMode(11 /* La LED de statut du PLL du Si5351*/, 0x1); // Définition de la broche de la LED de statut de la PLL
+  digitalWrite(11 /* La LED de statut du PLL du Si5351*/, 0);
 
   //Initialisation du synthétiseur Si5351
-  i2c_found = si5351.init(SI5351_CRYSTAL_LOAD_8PF, 0, 0); 
+  i2c_found = si5351.init((2<<6), 0, 0);
   si5351.set_pll_input(SI5351_PLLA, SI5351_PLL_INPUT_XO);
 
   if(!i2c_found)
@@ -92,25 +78,25 @@ void setup()
   // Saisie de la fréquence en centièmes de Hz. Exemple: 1000 KHz est 100000000. 
   // Il faut aussi annexer les caractères "ULL" à  la fréquence.
   frequence = frequenceInit;
-  
-  
+
+
   // Query a status update and wait a bit to let the Si5351 populate the
   // status flags correctly.
     si5351.update_status();
     delay(100);
-  
+
   // set up the LCD's number of columns and rows:
     lcd.begin();
     lcd.display();
     lcd.backlight();
     lcd.clear();
- 
-    lcd.print(MESSAGE_INIT);
+
+    lcd.print("JK-144-V0.04");
     lcd.setCursor(0, 1);
     lcd.print("F4DEB 2024");
-    Serial.println(MESSAGE_INIT);
- 
-  
+    Serial.println("JK-144-V0.04");
+
+
   // Print a message to the LCD.
   //lcd.print("  Emetteur GO  ");
 
@@ -121,22 +107,22 @@ void setup()
 
 
   // Configuration des pins de notre Arduino Nano en "entrées", car elles recevront les signaux du KY-040
-    pinMode(pinArduinoRaccordementSignalSW, INPUT_PULLUP);         // à remplacer par : pinMode(pinArduinoRaccordementSignalSW, INPUT_PULLUP);
+    pinMode(2 /* La pin D2 de l'Arduino recevra la ligne SW du module KY-040*/, 0x2); // à remplacer par : pinMode(pinArduinoRaccordementSignalSW, INPUT_PULLUP);
                                                             // si jamais votre module KY-040 n'est pas doté de résistance pull-up, au niveau de SW
-    pinMode(pinArduinoRaccordementSignalDT, INPUT_PULLUP);
-    pinMode(pinArduinoRaccordementSignalCLK, INPUT_PULLUP);
+    pinMode(4 /* La pin D4 de l'Arduino recevra la ligne DT du module KY-040*/, 0x2);
+    pinMode(3 /* La pin D3 de l'Arduino recevra la ligne CLK du module KY-040*/, 0x2);
 
     // Mémorisation des valeurs initiales, au démarrage du programme
-    etatPrecedentLigneSW  = digitalRead(pinArduinoRaccordementSignalSW);
-    etatPrecedentLigneCLK = digitalRead(pinArduinoRaccordementSignalCLK);
-   
-    serialPrintFrequency(frequenceOut);
-    LcdPrintFrequency (frequenceOut,FREQUENCE_FORMAT);
+    etatPrecedentLigneSW = digitalRead(2 /* La pin D2 de l'Arduino recevra la ligne SW du module KY-040*/);
+    etatPrecedentLigneCLK = digitalRead(3 /* La pin D3 de l'Arduino recevra la ligne CLK du module KY-040*/);
 
-    pinMode(BP1,INPUT);
-    pinMode(BP2,INPUT);
-    pinMode(BP3,INPUT);    
-    pinMode(BP4,INPUT);  
+    serialPrintFrequency(frequenceOut);
+    LcdPrintFrequency (frequenceOut,9);
+
+    pinMode(5,0x0);
+    pinMode(6,0x0);
+    pinMode(7,0x0);
+    pinMode(8,0x0);
 
     // Petite pause pour laisser se stabiliser les signaux, avant d'attaquer la boucle loop
     delay(100);
@@ -148,7 +134,7 @@ void loop()
   bool pll_state = false;
   static unsigned long timer = millis();
   keyPrint();
-  
+
   // Read the Status Register and print it every 10 seconds
   si5351.update_status();
 
@@ -157,19 +143,19 @@ void loop()
   // Il faut aussi annexer les caractères "ULL" à  la fréquence.
   //frequence = frequenceInit + (compteur * shift);
   //si5351.set_freq(frequence , SI5351_CLK0); 
-  
+
   // Détection du signal référence externe pour activer la LED. Lecture directe du registre de statut. 
   // Anti-rebond nécessaire.
 
-  pll_state = (not si5351.dev_status.LOL_A && not si5351.dev_status.LOL_B);  // Le statut LOL est plus stable que le LOS  
-  if (pll_state)    // Le PLL est verrouillé
+  pll_state = (not si5351.dev_status.LOL_A && not si5351.dev_status.LOL_B); // Le statut LOL est plus stable que le LOS  
+  if (pll_state) // Le PLL est verrouillé
   {
-    digitalWrite(PLL_LED,1);
+    digitalWrite(11 /* La LED de statut du PLL du Si5351*/,1);
     timer = millis();
   }
-  else if (millis() - timer > 1000)  // Le PLL est déverrouillé et le temps de 1 seconde est écoulé
+  else if (millis() - timer > 1000) // Le PLL est déverrouillé et le temps de 1 seconde est écoulé
   {
-    digitalWrite(PLL_LED,0);  // Le statut LOL est plus stable que le LOS
+    digitalWrite(11 /* La LED de statut du PLL du Si5351*/,0); // Le statut LOL est plus stable que le LOS
     timer = millis();
   }
 
@@ -183,9 +169,9 @@ void loop()
 
 
 // Lecture des signaux du KY-040 arrivant sur l'arduino
-    int etatActuelDeLaLigneCLK = digitalRead(pinArduinoRaccordementSignalCLK);
-    int etatActuelDeLaLigneSW  = digitalRead(pinArduinoRaccordementSignalSW);
-    int etatActuelDeLaLigneDT  = digitalRead(pinArduinoRaccordementSignalDT);
+    int etatActuelDeLaLigneCLK = digitalRead(3 /* La pin D3 de l'Arduino recevra la ligne CLK du module KY-040*/);
+    int etatActuelDeLaLigneSW = digitalRead(2 /* La pin D2 de l'Arduino recevra la ligne SW du module KY-040*/);
+    int etatActuelDeLaLigneDT = digitalRead(4 /* La pin D4 de l'Arduino recevra la ligne DT du module KY-040*/);
 
     // *****************************************
     // On regarde si la ligne SW a changé d'état
@@ -196,15 +182,15 @@ void loop()
         etatPrecedentLigneSW = etatActuelDeLaLigneSW;
 
         // Puis on affiche le nouvel état de SW sur le moniteur série de l'IDE Arduino
-        if(etatActuelDeLaLigneSW == LOW){
+        if(etatActuelDeLaLigneSW == 0x0){
 
         }
         // Petit délai de 5 ms, pour filtrer les éventuels rebonds sur SW
         lcd.blinkOff();
         lcd.cursorOff();
         delay(5);
-        serialPrintFrequency(frequenceOut);  
-        LcdPrintFrequency (frequenceOut,FREQUENCE_FORMAT);   
+        serialPrintFrequency(frequenceOut);
+        LcdPrintFrequency (frequenceOut,9);
     }
 
     // ******************************************
@@ -215,8 +201,8 @@ void loop()
       // On mémorise cet état, pour éviter les doublons
       etatPrecedentLigneCLK = etatActuelDeLaLigneCLK;
 
-      if(etatActuelDeLaLigneCLK == LOW) {
-        
+      if(etatActuelDeLaLigneCLK == 0x0) {
+
         // On compare le niveau de la ligne CLK avec celui de la ligne DT
         // --------------------------------------------------------------
         // Nota : - si CLK est différent de DT, alors cela veut dire que nous avons tourné l'encodeur dans le sens horaire
@@ -236,40 +222,40 @@ void loop()
         }
         // Petit délai de 5 ms, pour filtrer les éventuels rebonds sur CLK
         delay(5);
-        serialPrintFrequency(frequenceOut);       
-        LcdPrintFrequency (frequenceOut,FREQUENCE_FORMAT);
+        serialPrintFrequency(frequenceOut);
+        LcdPrintFrequency (frequenceOut,9);
       }
     }
 }
 
 void keyPrint(void){
 
-  if (!digitalRead(BP2)) {
+  if (!digitalRead(6)) {
     frequencyShift = frequencyShift / 10;
     if (frequencyShift < 100){
       frequencyShift = 100;
     }
-    while (!digitalRead(BP2));
+    while (!digitalRead(6));
     lcd.cursor();
     lcd.blink();
-  }  
-  if (!digitalRead(BP1)) {
+  }
+  if (!digitalRead(5)) {
     frequencyShift = frequencyShift * 10;
     if (frequencyShift > 100000000){
       frequencyShift = 100000000;
     }
-    while (!digitalRead(BP1));
+    while (!digitalRead(5));
     lcd.cursor();
     lcd.blink();
-  }  
+  }
 }
 
 void serialPrintFrequency (uint32_t OL){
 
 
-  
 
-  
+
+
 }
 
 char* uint64Format(uint64_t frequency, int format){
@@ -278,12 +264,12 @@ char* uint64Format(uint64_t frequency, int format){
   char stringUint64Format[format+1];
 
   // calcul de la longueur du nombre transmis
-  int n = log10(frequency) + 1;   // il faut ajouter 1
+  int n = log10(frequency) + 1; // il faut ajouter 1
 
   if (format >= n) {
 
     // Formatage
-    char value[format]; 
+    char value[format];
     sprintf(value, "%ld", frequency);
 
     // calcul nombre caratere vide 
@@ -303,7 +289,7 @@ char* uint64Format(uint64_t frequency, int format){
     //lcd.print(tableau);
   }
   else {
-    Serial.print(ERROR_0001);
+    Serial.print("Error 0001 : Erreur de formatage Conversion frequence");
   }
 
   int adresse = &stringUint64Format;
@@ -316,7 +302,7 @@ char* uint64Format(uint64_t frequency, int format){
 
 char* uint64SeparatorMille(char *value){
 
-  
+
   char car;
   //int n = strlen(value) ;   // il faut ajouter 1
   int p = strlen(value);
@@ -328,7 +314,7 @@ char* uint64SeparatorMille(char *value){
   for (j = 0; j <= p-1; j++){
     for (k = 0 ; k<2; k++){
 
-      car  = value[j];
+      car = value[j];
       stringUint64SeparatorMille[l] = car;
 //      if (nombreZero > 0) {
 //        stringUint64SeparatorMille[l] = "e";
@@ -337,9 +323,9 @@ char* uint64SeparatorMille(char *value){
 //      }
       j++;
       l++;
-      
+
     }
-  car  = value[j];
+  car = value[j];
   stringUint64SeparatorMille[l] = car;
   l++;
   if (l != p+(p/4)) {
@@ -360,7 +346,7 @@ char* uint64SeparatorMille(char *value){
 
 void LcdPrintFrequency (uint64_t frequency, int format){
   lcd.clear();
-  Serial.println(MESSAGE_INIT);
+  Serial.println("JK-144-V0.04");
 
 
   char *texte = uint64Format(frequency, format);
@@ -375,15 +361,7 @@ void LcdPrintFrequency (uint64_t frequency, int format){
 
 
 }
-
-
-
-
-
-
-
-
-
+# 387 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
 void setFrequency (void){
   uint32_t save = frequence;
   frequence = frequence + ((compteur * frequencyShift) );
@@ -398,12 +376,12 @@ void setOl1(uint32_t Ol1){
 }
 
 uint32_t getOl1(void){
-  
+
 }
 
 void setFrequencyOut(uint64_t frequence1){
  //   frequenceOut = (OL1 * 6) + OL2; 13544005638    135370000
-  setOl1((13544005638-OL2)/6);
+  setOl1((13544005638-8949438)/6);
 
 }
 

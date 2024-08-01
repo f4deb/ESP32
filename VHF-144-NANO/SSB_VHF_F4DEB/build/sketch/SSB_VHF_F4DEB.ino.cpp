@@ -1,3 +1,5 @@
+#include <Arduino.h>
+#line 1 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
 #include <si5351.h>
 
 //***********************************
@@ -68,6 +70,31 @@ int etatPrecedentLigneSW;           // Cette variable nous permettra de stocker 
 int etatPrecedentLigneCLK; 
 
 
+#line 71 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
+void setup();
+#line 146 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
+void loop();
+#line 245 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
+void keyPrint(void);
+#line 267 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
+void serialPrintFrequency(uint32_t OL);
+#line 275 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
+char * uint64Format(uint64_t frequency, int format);
+#line 317 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
+char * uint64SeparatorMille(char *value);
+#line 361 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
+void LcdPrintFrequency(uint64_t frequency, int format);
+#line 387 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
+void setFrequency(void);
+#line 396 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
+void setOl1(uint32_t Ol1);
+#line 400 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
+uint32_t getOl1(void);
+#line 404 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
+void setFrequencyOut(uint64_t frequence1);
+#line 410 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
+uint64_t getFrequencyOut(void);
+#line 71 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
 void setup()
 {
   bool i2c_found;
@@ -413,3 +440,4 @@ uint64_t getFrequencyOut(void){
 
 
     //frequenceOut = (OL1 * (OL1_COEFF)) + OL2;
+

@@ -1,0 +1,11 @@
+{
+  "additionalFiles": "../../..,../../..,../../..",
+  "builtInToolsFolders": "",
+  "compiler.optimization_flags": "",
+  "customBuildProperties": "",
+  "fqbn": "arduino:avr:nano:cpu=atmega328old",
+  "hardwareFolders": "/home/f4deb/.arduino15/packages",
+  "otherLibrariesFolders": "/home/f4deb/Arduino/libraries",
+  "runtime.ide.version": "10607",
+  "sketchLocation": "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB"
+}
