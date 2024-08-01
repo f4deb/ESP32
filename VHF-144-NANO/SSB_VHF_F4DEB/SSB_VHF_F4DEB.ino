@@ -320,6 +320,11 @@ char* uint64SeparatorMille(char *value){
   char car;
   //int n = strlen(value) ;   // il faut ajouter 1
   int p = strlen(value);
+<<<<<<< HEAD
+=======
+
+  char value1[p+(p/4)];
+>>>>>>> 894ae380549e06b3afea9962dc7f06f30212a46c
 
   int j = 0;
   int k = 0;
@@ -346,10 +351,27 @@ char* uint64SeparatorMille(char *value){
     stringUint64SeparatorMille[l] = '.';
     }
   l++;
+<<<<<<< HEAD
   }
   stringUint64SeparatorMille[l-1] = '\0';
 
   int adresse = &stringUint64SeparatorMille;
+=======
+  if (l != p+(p/4)) {
+    value1[l] = '.';
+    }
+  l++;
+  }
+  value1[l-1] = '\0';
+
+
+  sprintf(value1,  value1); //pour corriger bug fin de chaine de caractere
+
+
+
+
+  int adresse = &value1;
+>>>>>>> 894ae380549e06b3afea9962dc7f06f30212a46c
   return adresse;
 }
 
@@ -361,12 +383,16 @@ char* uint64SeparatorMille(char *value){
 void LcdPrintFrequency (uint64_t frequency, int format){
   lcd.clear();
   Serial.println(MESSAGE_INIT);
+<<<<<<< HEAD
+
+=======
+>>>>>>> 894ae380549e06b3afea9962dc7f06f30212a46c
 
 
-  char *texte = uint64Format(frequency, format);
+  /*char *texte = uint64Format(frequency, format);
   Serial.println(texte);
   lcd.setCursor(0,0);
-  lcd.print(texte);
+  lcd.print(texte);*/
 
   char *text1 = uint64SeparatorMille(texte);
   Serial.println(text1);
