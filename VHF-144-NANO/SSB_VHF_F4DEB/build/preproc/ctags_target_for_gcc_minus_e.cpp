@@ -1,5 +1,4 @@
 # 1 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
-# 2 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino" 2
 
 //***********************************
 // Emetteur GO
@@ -11,9 +10,9 @@
 //
 //***********************************
 
+# 13 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino" 2
 # 14 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino" 2
 # 15 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino" 2
-# 16 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino" 2
 //*******************
 // Constantesu
 //*******************
@@ -33,7 +32,7 @@ const int colorB = 0;
 
 
 // Constantes
-# 51 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
+# 50 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
 LCD_I2C lcd(0x27, 16, 2); // Default address of most PCF8574 modules, change according
 
 // Variables
@@ -43,7 +42,7 @@ uint8_t keyboardCode = 0xFF;
 uint32_t OL1;
 uint64_t frequencyShift = 10000000/6;
 
-static uint64_t frequenceOut = 145537501;
+static uint64_t frequenceOut = 144300000;
 static char stringUint64SeparatorMille[30];
 static char stringUint64Format[30];
 
@@ -96,15 +95,10 @@ void setup()
     lcd.print("F4DEB 2024");
     Serial.println("JK-144-V0.04");
 
-
-  // Print a message to the LCD.
-  //lcd.print("  Emetteur GO  ");
-
-  // Query a status update and wait a bit to let the Si5351 populate the
+    // Query a status update and wait a bit to let the Si5351 populate the
   // status flags correctly.
   si5351.update_status();
   delay(100);
-
 
   // Configuration des pins de notre Arduino Nano en "entrées", car elles recevront les signaux du KY-040
     pinMode(2 /* La pin D2 de l'Arduino recevra la ligne SW du module KY-040*/, 0x2); // à remplacer par : pinMode(pinArduinoRaccordementSignalSW, INPUT_PULLUP);
@@ -127,7 +121,6 @@ void setup()
     // Petite pause pour laisser se stabiliser les signaux, avant d'attaquer la boucle loop
     delay(100);
 }
-
 
 void loop()
 {
@@ -159,14 +152,9 @@ void loop()
     timer = millis();
   }
 
-
-
   //si5351.set_freq(2255842700, SI5351_CLK0); 
   //setOl1(2255842700);
   setFrequencyOut(frequenceOut);
-  while(1);
-
-
 
 // Lecture des signaux du KY-040 arrivant sur l'arduino
     int etatActuelDeLaLigneCLK = digitalRead(3 /* La pin D3 de l'Arduino recevra la ligne CLK du module KY-040*/);
@@ -252,11 +240,65 @@ void keyPrint(void){
 
 void serialPrintFrequency (uint32_t OL){
 
+}
+
+void LcdPrintFrequency (uint64_t frequency, int format){
+  lcd.clear();
+  Serial.println("JK-144-V0.04");
 
 
+  char *texte = uint64Format(frequency, format);
+  Serial.println(texte);
+  lcd.setCursor(0,0);
+  lcd.print(texte);
 
+  char *text1 = uint64SeparatorMille(texte);
+  Serial.println(text1);
+  lcd.setCursor(0,1);
+  lcd.print(text1);
+}
+
+void setFrequency (void){
+  uint32_t save = frequence;
+  frequence = frequence + ((compteur * frequencyShift) );
+  if (frequence < 100000 ) {
+    frequence = save;
+    }
+  si5351.set_freq(frequence , SI5351_CLK0);
+}
+
+void setOl1(uint64_t Ol1){
+
+  si5351.set_freq(Ol1 , SI5351_CLK0);
+}
+
+uint32_t getOl1(void){
 
 }
+
+void setFrequencyOut(uint64_t frequence1){
+ //   frequenceOut = (OL1 * 6) - OL2; 13544005638    135370000       2255842700 145537500
+
+
+ Serial.println(8949000);
+
+
+  setOl1(((frequence1-8949000)*100)/6);
+}
+
+uint64_t getFrequencyOut(void){
+
+}
+
+
+    //frequenceOut = (OL1 * (OL1_COEFF)) + OL2;
+
+
+
+
+/************************************************
+ *  String conversion
+ ************************************************/
 
 char* uint64Format(uint64_t frequency, int format){
 
@@ -296,12 +338,7 @@ char* uint64Format(uint64_t frequency, int format){
   return (adresse);
 }
 
-
-
-
-
 char* uint64SeparatorMille(char *value){
-
 
   char car;
   //int n = strlen(value) ;   // il faut ajouter 1
@@ -316,14 +353,8 @@ char* uint64SeparatorMille(char *value){
 
       car = value[j];
       stringUint64SeparatorMille[l] = car;
-//      if (nombreZero > 0) {
-//        stringUint64SeparatorMille[l] = "e";
-//        nombreZero--;
-//        j++;
-//      }
       j++;
       l++;
-
     }
   car = value[j];
   stringUint64SeparatorMille[l] = car;
@@ -338,56 +369,3 @@ char* uint64SeparatorMille(char *value){
   int adresse = &stringUint64SeparatorMille;
   return adresse;
 }
-
-
-
-
-
-
-void LcdPrintFrequency (uint64_t frequency, int format){
-  lcd.clear();
-  Serial.println("JK-144-V0.04");
-
-
-  char *texte = uint64Format(frequency, format);
-  Serial.println(texte);
-  lcd.setCursor(0,0);
-  lcd.print(texte);
-
-  char *text1 = uint64SeparatorMille(texte);
-  Serial.println(text1);
-  lcd.setCursor(0,1);
-  lcd.print(text1);
-
-
-}
-# 387 "/home/f4deb/Documents/ESP32/VHF-144-NANO/SSB_VHF_F4DEB/SSB_VHF_F4DEB.ino"
-void setFrequency (void){
-  uint32_t save = frequence;
-  frequence = frequence + ((compteur * frequencyShift) );
-  if (frequence < 100000 ) {
-    frequence = save;
-    }
-  si5351.set_freq(frequence , SI5351_CLK0);
-}
-
-void setOl1(uint32_t Ol1){
-  si5351.set_freq(Ol1 , SI5351_CLK0);
-}
-
-uint32_t getOl1(void){
-
-}
-
-void setFrequencyOut(uint64_t frequence1){
- //   frequenceOut = (OL1 * 6) + OL2; 13544005638    135370000
-  setOl1((13544005638-8949438)/6);
-
-}
-
-uint64_t getFrequencyOut(void){
-
-}
-
-
-    //frequenceOut = (OL1 * (OL1_COEFF)) + OL2;
