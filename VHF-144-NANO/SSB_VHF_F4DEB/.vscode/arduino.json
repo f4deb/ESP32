@@ -2,6 +2,6 @@
     "configuration": "cpu=atmega328old",
     "board": "arduino:avr:nano",
     "sketch": "SSB_VHF_F4DEB.ino",
-    "port": "/dev/ttyUSB0",
+    "port": "/dev/ttyUSB2",
     "output": "./build" 
 }
